@@ -1,3 +1,3 @@
-# DragonCamera
+# TRCinematicImporter
 
-A tool to import the dagger cutscene cinematic frames from Dragon's Lair into custom levels that use the dragon.
+A tool to import original cinematic camera data for classic Tomb Raider levels (1-3) into custom levels.
