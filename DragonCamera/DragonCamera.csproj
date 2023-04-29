@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net480</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <AssemblyName>DragonCamera</AssemblyName>
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+    
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationIcon>dragon.ico</ApplicationIcon>
+
+    <Version>1.0.0</Version>
+    <Product>Tomb Raider Dragon Camera Importer</Product>
+    <Copyright>Copyright © Tomb Raider Community 2023</Copyright>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="TRLevelReader">
+      <HintPath>..\Dependencies\TRLevelReader.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="frames.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="rmdir /S /Q $(TargetDir)\Lib" />
+  </Target>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="mkdir $(TargetDir)\Lib&#xD;&#xA;move /Y $(TargetDir)\*.dll $(TargetDir)\Lib" />
+  </Target>
+</Project>
