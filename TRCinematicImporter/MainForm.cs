@@ -1,18 +1,23 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
-using System.Threading;
 using System.Windows.Forms;
-using TRLevelReader;
-using TRLevelReader.Model;
 
-namespace DragonCamera
+namespace TRCinematicImporter
 {
     public partial class MainForm : Form
     {
+        private FramesetImporter _importer;
+
         public MainForm()
         {
             InitializeComponent();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            _importer = new FramesetImporter();
+            cinematicComboBox.Items.AddRange(_importer.Cinematics);
+            cinematicComboBox.SelectedIndex = 0;
         }
 
         private void BrowseButton_Click(object sender, EventArgs e)
@@ -32,7 +37,9 @@ namespace DragonCamera
         {
             try
             {
+                Cursor = Cursors.WaitCursor;
                 savedLabel.Visible = false;
+                labelTimer.Stop();
 
                 string path = lvlTextBox.Text.Trim();
                 if (!File.Exists(path))
@@ -40,24 +47,28 @@ namespace DragonCamera
                     throw new IOException(path + " does not exist.");
                 }
 
-                TR2Level level = new TR2LevelReader().ReadLevel(path);
-                level.CinematicFrames = JsonConvert.DeserializeObject<TRCinematicFrame[]>(File.ReadAllText("frames.json"));
-                level.NumCinematicFrames = (ushort)level.CinematicFrames.Length;
-                new TR2LevelWriter().WriteLevelToFile(level, path);
+                Frameset cinematic = cinematicComboBox.SelectedItem as Frameset;
+
+                _importer.Import(cinematic, path);
 
                 savedLabel.Visible = true;
-                new Thread(HideLabel).Start();
+                labelTimer.Enabled = true;
+                labelTimer.Start();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
         }
 
-        private void HideLabel()
+        private void LabelTimer_Tick(object sender, EventArgs e)
         {
-            Thread.Sleep(5000);
-            Invoke(new Action(() => savedLabel.Visible = false));
+            savedLabel.Visible = false;
+            labelTimer.Stop();
         }
     }
 }

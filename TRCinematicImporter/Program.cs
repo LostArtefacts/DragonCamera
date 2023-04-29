@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace DragonCamera
+namespace TRCinematicImporter
 {
     internal static class Program
     {
